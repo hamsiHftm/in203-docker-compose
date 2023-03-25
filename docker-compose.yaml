@@ -1,10 +1,37 @@
-version: "3"
+version: '3.3'
+
 services:
+  frontend:
+    build: frontent-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
   backend:
     build: backend-app
     ports:
       - "3001:3001"
-  frontend:
-    image: frontend-app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     ports:
-      - "3000:3000"
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  dbdata:
